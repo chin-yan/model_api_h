@@ -1,13 +1,22 @@
 # -*- coding: UTF-8 -*-
-import pickle
-import gzip
+import numpy as np
+import globals
+from pymongo import MongoClient
+from gridfs import GridFS
 
-# 載入Model
-with gzip.open('app/model/xgboost-iris.pgz', 'r') as f:
-    xgboostModel = pickle.load(f)
-
+globals.results=' '
+globals.count=0
 
 def predict(input):
-    pred=xgboostModel.predict(input)[0]
-    print(pred)
-    return pred
+    cluster = MongoClient("mongodb+srv://yan31:yan31@cluster0.xfxba5r.mongodb.net/?retryWrites=true&w=majority")
+    db = cluster["ootdData"]
+    col = db["fs.files"]
+    gridFS = GridFS(db, collection="fs")
+    query = {"filename": input}
+    mydoc = col.find(query)
+
+    for x in mydoc:
+        tag1 = x['tag1']
+        tag2 = x['tag2']
+
+    return str(tag1),str(tag2)
