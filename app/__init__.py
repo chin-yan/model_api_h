@@ -16,14 +16,10 @@ def getResult():
 
 @app.route('/predict', methods=['POST'])
 def postInput():
-    # 取得前端傳過來的數值
     insertValues = request.get_json()
-    x1=insertValues['sepalLengthCm']
-    x2=insertValues['sepalWidthCm']
-    x3=insertValues['petalLengthCm']
-    x4=insertValues['petalWidthCm']
-    input = np.array([[x1, x2, x3, x4]])
-    # 進行預測
-    result = model.predict(input)
+    x1=insertValues['file_name']
+    globals.img = str(x1)
 
-    return jsonify({'result': str(result)})
+    result = model.predict(globals.img)
+    return str(result)
+    #return jsonify({'return': str(globals.img)})
