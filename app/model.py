@@ -8,7 +8,7 @@ from bson.objectid import ObjectId
 
 def predict(input):
     model = torch.hub.load('ultralytics/yolov5', 'custom', path='weights/best.pt',force_reload=True)
-    cluster = MongoClient("mongodb+srv://yan31:yan31@cluster0.xfxba5r.mongodb.net/?retryWrites=true&w=majority")
+    cluster = MongoClient("mongodb://localhost:27017")
     db = cluster["react-fileupload-db"]
     col = db["fs.files"]
     fs = GridFS(db, collection="fs")
