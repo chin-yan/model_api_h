@@ -11,3 +11,4 @@ opencv-python-headless
 pandas
 IPython
 psutil
+yaml
