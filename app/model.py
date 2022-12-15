@@ -1,22 +1,25 @@
-# -*- coding: UTF-8 -*-
+#把從資料庫保存下來的照片放入模型中進行預測
+import torch
 import numpy as np
-import globals
+import cv2
 from pymongo import MongoClient
 from gridfs import GridFS
-
-globals.results=' '
-globals.count=0
+from bson.objectid import ObjectId
 
 def predict(input):
+    model = torch.hub.load('ultralytics/yolov5', 'custom', path='weights/best.pt',force_reload=True)
     cluster = MongoClient("mongodb+srv://yan31:yan31@cluster0.xfxba5r.mongodb.net/?retryWrites=true&w=majority")
-    db = cluster["ootdData"]
+    db = cluster["react-fileupload-db"]
     col = db["fs.files"]
-    gridFS = GridFS(db, collection="fs")
-    query = {"filename": input}
-    mydoc = col.find(query)
+    fs = GridFS(db, collection="fs")
+    query = {'_id': ObjectId(str(input))}
 
-    for x in mydoc:
-        tag1 = x['tag1']
-        tag2 = x['tag2']
+    for grid_out in fs.find(query):
+        data = grid_out.read()  # 獲取圖片資料
+        outf = open(str(input) + '.jpg', 'wb')  # 建立檔案
+        outf.write(data)  # 儲存圖片
+        outf.close()
 
-    return str(tag1),str(tag2)
+    img = cv2.imread('/Users/yan/Desktop/model_api_h/'+input+'.jpg')
+    results = str(model(img))
+    return results[21]
